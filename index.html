@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Cuéntame todo! ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7ff;
+    --card: #ffffff;
+    --border: #e8dff8;
+    --accent1: #c084fc;
+    --accent2: #e879f9;
+    --accent3: #a78bfa;
+    --accent4: #f0abfc;
+    --accent5: #ede9fe;
+    --text: #3b2a5a;
+    --muted: #9b7fc0;
+    --soft: #f5f0ff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(192,132,252,0.13) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 85%, rgba(232,121,249,0.10) 0%, transparent 55%);
+  }
+
+  .container { max-width: 680px; margin: 0 auto; position: relative; }
+
+  header {
+    text-align: center;
+    margin-bottom: 44px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .emoji-row {
+    font-size: 2.2rem; margin-bottom: 14px;
+    display: flex; gap: 14px; justify-content: center;
+  }
+  .emoji-row span { display: inline-block; animation: float 3s ease-in-out infinite; }
+  .emoji-row span:nth-child(2) { animation-delay: 0.5s; }
+  .emoji-row span:nth-child(3) { animation-delay: 1s; }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3rem); font-weight: 900;
+    background: linear-gradient(135deg, #9333ea, #e879f9, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 14px; line-height: 1.15;
+  }
+
+  header p {
+    color: var(--muted); font-size: 1rem;
+    max-width: 430px; margin: 0 auto; line-height: 1.75; font-weight: 500;
+  }
+
+  .progress-wrap { margin-bottom: 36px; animation: fadeUp 0.7s 0.1s ease both; }
+  .progress-label { font-size: 0.77rem; color: var(--muted); text-align: right; margin-bottom: 7px; font-weight: 700; letter-spacing: 0.04em; }
+  .progress-bar { background: var(--accent5); border-radius: 99px; height: 7px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent3), var(--accent2));
+    border-radius: 99px; transition: width 0.5s cubic-bezier(.4,0,.2,1); width: 0%;
+  }
+
+  .section {
+    background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 24px; padding: 30px 32px; margin-bottom: 20px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 28px rgba(167,139,250,0.08);
+    animation: fadeUp 0.5s ease both;
+    transition: box-shadow 0.3s, border-color 0.3s;
+  }
+  .section:focus-within { box-shadow: 0 10px 44px rgba(192,132,252,0.16); border-color: #d8b4fe; }
+  .section::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 4px; border-radius: 24px 24px 0 0; opacity: 0; transition: opacity 0.3s;
+  }
+  .section:focus-within::before { opacity: 1; }
+  .section:nth-child(1)::before { background: linear-gradient(90deg, #a78bfa, #e879f9); }
+  .section:nth-child(2)::before { background: linear-gradient(90deg, #e879f9, #c084fc); }
+  .section:nth-child(3)::before { background: linear-gradient(90deg, #f0abfc, #a78bfa); }
+  .section:nth-child(4)::before { background: linear-gradient(90deg, #c084fc, #f0abfc); }
+
+  .section-deco { position: absolute; top: 18px; right: 22px; font-size: 1.7rem; opacity: 0.15; pointer-events: none; }
+
+  .section-tag {
+    display: inline-block; font-size: 0.67rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: white;
+    background: linear-gradient(135deg, var(--accent3), var(--accent2));
+    padding: 3px 13px; border-radius: 99px; margin-bottom: 10px;
+  }
+
+  .section h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 22px; color: var(--text); }
+
+  label {
+    display: block; font-size: 0.88rem; color: var(--muted);
+    margin-bottom: 10px; margin-top: 20px; font-weight: 700; line-height: 1.5;
+  }
+  label:first-of-type { margin-top: 0; }
+
+  input[type="text"], textarea {
+    width: 100%; background: var(--soft); border: 1.5px solid var(--border);
+    border-radius: 12px; color: var(--text); font-family: 'Nunito', sans-serif;
+    font-size: 0.95rem; padding: 12px 16px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; font-weight: 500;
+  }
+  input::placeholder, textarea::placeholder { color: #c4b0e0; }
+  input:focus, textarea:focus { border-color: var(--accent1); box-shadow: 0 0 0 3px rgba(192,132,252,0.14); background: #fff; }
+  textarea { resize: vertical; min-height: 82px; line-height: 1.65; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 4px; }
+  .chip {
+    cursor: pointer; padding: 8px 17px; border-radius: 99px;
+    border: 1.5px solid var(--border); font-size: 0.85rem; font-weight: 600;
+    color: var(--muted); background: var(--soft);
+    transition: all 0.18s cubic-bezier(.4,0,.2,1); user-select: none;
+  }
+  .chip:hover { border-color: var(--accent1); color: var(--accent1); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(192,132,252,0.18); }
+  .chip.sel-purple { background: linear-gradient(135deg,#9333ea,#c084fc); border-color: transparent; color: white; box-shadow: 0 4px 14px rgba(147,51,234,0.28); }
+  .chip.sel-pink   { background: linear-gradient(135deg,#e879f9,#f0abfc); border-color: transparent; color: white; box-shadow: 0 4px 14px rgba(232,121,249,0.28); }
+  .chip.sel-violet { background: linear-gradient(135deg,#7c3aed,#a78bfa); border-color: transparent; color: white; box-shadow: 0 4px 14px rgba(124,58,237,0.24); }
+  .chip.sel-lilac  { background: linear-gradient(135deg,#c084fc,#ddd6fe); border-color: transparent; color: #4c1d95; box-shadow: 0 4px 14px rgba(192,132,252,0.22); }
+
+  /* CLASS CARDS */
+  .class-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 6px;
+  }
+  @media (max-width: 500px) { .class-grid { grid-template-columns: 1fr; } }
+
+  .class-card {
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 15px 16px 14px;
+    background: var(--soft);
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    user-select: none;
+    position: relative;
+  }
+  .class-card:hover {
+    border-color: var(--accent1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(192,132,252,0.18);
+  }
+  .class-card.selected {
+    background: linear-gradient(135deg, #9333ea, #e879f9);
+    border-color: transparent;
+    box-shadow: 0 6px 24px rgba(147,51,234,0.32);
+    transform: translateY(-2px);
+  }
+  .class-card.selected .class-title { color: white; }
+  .class-card.selected .class-cat { color: rgba(255,255,255,0.72); }
+  .class-card.selected .check-icon { opacity: 1; }
+
+  .check-icon {
+    position: absolute; top: 11px; right: 13px;
+    width: 20px; height: 20px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: white;
+    opacity: 0; transition: opacity 0.2s;
+  }
+
+  .class-emoji { font-size: 1.45rem; margin-bottom: 7px; display: block; }
+  .class-title { font-size: 0.83rem; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 5px; }
+  .class-cat { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+  /* SCALE */
+  .scale { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 4px; }
+  .scale-btn {
+    width: 42px; height: 42px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--soft);
+    color: var(--muted); font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; transition: all 0.18s; font-family: 'Nunito', sans-serif;
+  }
+  .scale-btn:hover { border-color: var(--accent1); color: var(--accent1); transform: translateY(-1px); }
+  .scale-btn.active { background: linear-gradient(135deg,#9333ea,#e879f9); border-color: transparent; color: white; box-shadow: 0 4px 14px rgba(147,51,234,0.3); }
+  .scale-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: #c4b0e0; margin-top: 7px; font-weight: 700; }
+
+  .char-count { font-size: 0.71rem; color: #c4b0e0; text-align: right; margin-top: 5px; font-weight: 600; }
+
+  .submit-wrap { text-align: center; margin-top: 10px; }
+  .submit-btn {
+    display: inline-block; padding: 18px 52px;
+    background: linear-gradient(135deg, #9333ea, #e879f9);
+    border: none; border-radius: 99px; color: white;
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 8px 32px rgba(147,51,234,0.38);
+  }
+  .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(147,51,234,0.45); }
+  .submit-btn:active { transform: translateY(0); }
+
+  .success { display: none; text-align: center; padding: 60px 20px; animation: fadeUp 0.7s ease; }
+  .success.show { display: block; }
+  .success-emoji { font-size: 4.5rem; margin-bottom: 20px; animation: float 2.5s ease-in-out infinite; display: block; }
+  .success h2 {
+    font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900;
+    background: linear-gradient(135deg, #9333ea, #e879f9);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 12px;
+  }
+  .success > p { color: var(--muted); line-height: 1.8; font-size: 1rem; max-width: 420px; margin: 0 auto 28px; font-weight: 500; }
+
+  .summary-card {
+    display: none; background: var(--card); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 28px; margin-top: 24px; text-align: left;
+    box-shadow: 0 4px 24px rgba(167,139,250,0.1);
+  }
+  .summary-card.show { display: block; }
+  .summary-card h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 18px;
+    background: linear-gradient(135deg, #9333ea, #e879f9);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .summary-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .summary-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .summary-item .sq { font-size: 0.74rem; color: var(--muted); margin-bottom: 3px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .summary-item .sa { font-size: 0.93rem; color: var(--text); font-weight: 600; line-height: 1.6; white-space: pre-line; }
+
+  .reset-btn {
+    display: inline-block; padding: 13px 36px;
+    background: var(--soft); border: 1.5px solid var(--border);
+    border-radius: 99px; color: var(--accent1);
+    font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .reset-btn:hover { background: var(--border); transform: translateY(-2px); }
+
+  .pdf-btn {
+    display: inline-block; padding: 13px 36px;
+    background: linear-gradient(135deg, #9333ea, #e879f9);
+    border: none; border-radius: 99px; color: white;
+    font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(147,51,234,0.3);
+  }
+  .pdf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(147,51,234,0.4); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+  .section:nth-child(1) { animation-delay: 0.05s; }
+  .section:nth-child(2) { animation-delay: 0.12s; }
+  .section:nth-child(3) { animation-delay: 0.19s; }
+  .section:nth-child(4) { animation-delay: 0.26s; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="emoji-row"><span>🌸</span><span>✨</span><span>💜</span></div>
+    <h1>¡Cuéntame todo!</h1>
+    <p>Este formulario es solo para nosotras — no hay respuestas incorrectas. Cuanto más sincera seas, mejor puedo acompañarte 💜</p>
+  </header>
+
+  <div id="mainForm">
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">0 / 4 secciones</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- S1 -->
+    <div class="section">
+      <div class="section-deco">🌷</div>
+      <div class="section-tag">Sección 1</div>
+      <h2>👋 Sobre ti</h2>
+
+      <label>¿Cómo te llamas?</label>
+      <input type="text" id="name" placeholder="Tu nombre o apodo..." />
+
+      <label>¿Cómo te describirías en 3 palabras?</label>
+      <input type="text" id="threeWords" placeholder="Ej: curiosa, creativa, divertida..." />
+
+      <label>¿Hay algo que te hace única que quieras compartir?</label>
+      <textarea id="unique" placeholder="Puede ser algo que haces, sientes o piensas de forma especial..." maxlength="300"></textarea>
+      <div class="char-count" id="uniqueCount">0 / 300</div>
+    </div>
+
+    <!-- S2 -->
+    <div class="section">
+      <div class="section-deco">📚</div>
+      <div class="section-tag">Sección 2</div>
+      <h2>📚 La escuela</h2>
+
+      <label>¿Qué materias te gustan o encuentras interesantes? (elige todas las que quieras)</label>
+      <div class="chips">
+        <div class="chip" data-group="subjects" data-val="Matemáticas">Matemáticas</div>
+        <div class="chip" data-group="subjects" data-val="Ciencias">Ciencias</div>
+        <div class="chip" data-group="subjects" data-val="Historia">Historia</div>
+        <div class="chip" data-group="subjects" data-val="Arte">Arte</div>
+        <div class="chip" data-group="subjects" data-val="Música">Música</div>
+        <div class="chip" data-group="subjects" data-val="Ed. Física">Ed. Física</div>
+        <div class="chip" data-group="subjects" data-val="Idiomas">Idiomas</div>
+        <div class="chip" data-group="subjects" data-val="Tecnología">Tecnología</div>
+        <div class="chip" data-group="subjects" data-val="Biología">Biología</div>
+        <div class="chip" data-group="subjects" data-val="Ninguna">Ninguna 😅</div>
+      </div>
+
+      <label>¿Hay algo de la escuela que te guste aunque no sea una materia?</label>
+      <input type="text" id="schoolLike" placeholder="Ej: el recreo, ver a mis amigas, algún profe..." />
+    </div>
+
+    <!-- S3 -->
+    <div class="section">
+      <div class="section-deco">🎨</div>
+      <div class="section-tag">Sección 3</div>
+      <h2>🎯 Lo que te mueve</h2>
+
+      <label>Cuando quiero aprender algo nuevo, prefiero… (elige todas las que apliquen)</label>
+      <div class="chips">
+        <div class="chip" data-group="learnStyle" data-val="Leer un libro">📖 Leer un libro</div>
+        <div class="chip" data-group="learnStyle" data-val="Ver una película o documental sobre el tema">🎬 Ver una película o documental sobre el tema</div>
+        <div class="chip" data-group="learnStyle" data-val="Hacer un debate o discutirlo">🗣️ Hacer un debate o discutirlo</div>
+        <div class="chip" data-group="learnStyle" data-val="Escuchar un podcast">🎧 Escuchar un podcast</div>
+        <div class="chip" data-group="learnStyle" data-val="Practicarlo yo misma">🙋 Practicarlo yo misma</div>
+        <div class="chip" data-group="learnStyle" data-val="Ver videos cortos explicativos">📱 Ver videos cortos explicativos</div>
+        <div class="chip" data-group="learnStyle" data-val="Que me lo expliquen en persona">💬 Que me lo expliquen en persona</div>
+        <div class="chip" data-group="learnStyle" data-val="Juegos o dinámicas">🎮 Juegos o dinámicas</div>
+      </div>
+
+      <label>¿Qué haces en tu tiempo libre? (elige todas las que quieras)</label>
+      <div class="chips">
+        <div class="chip" data-group="interests" data-val="Música">🎵 Música</div>
+        <div class="chip" data-group="interests" data-val="Dibujar o pintar">🎨 Dibujar o pintar</div>
+        <div class="chip" data-group="interests" data-val="Leer">📚 Leer</div>
+        <div class="chip" data-group="interests" data-val="Redes sociales">📲 Redes sociales</div>
+        <div class="chip" data-group="interests" data-val="Series o películas">🎬 Series o películas</div>
+        <div class="chip" data-group="interests" data-val="Salir con amigas">👯 Salir con amigas</div>
+        <div class="chip" data-group="interests" data-val="Deportes">⚽ Deportes</div>
+        <div class="chip" data-group="interests" data-val="Cocinar">🍳 Cocinar</div>
+        <div class="chip" data-group="interests" data-val="Videojuegos">🎮 Videojuegos</div>
+        <div class="chip" data-group="interests" data-val="Escribir">✍️ Escribir</div>
+        <div class="chip" data-group="interests" data-val="Bailar">💃 Bailar</div>
+        <div class="chip" data-group="interests" data-val="Manualidades">✂️ Manualidades</div>
+      </div>
+
+      <label>¿Hay algo que siempre quisiste aprender o intentar pero nunca has podido?</label>
+      <input type="text" id="secretLearn" placeholder="Sin juicios, te lo prometo 🤫" />
+    </div>
+
+    <!-- S4: Clases -->
+    <div class="section">
+      <div class="section-deco">💡</div>
+      <div class="section-tag">Sección 4</div>
+      <h2>💡 ¿Cuáles de estas clases te emocionan?</h2>
+
+      <label>Estas son algunas de las cosas que vamos a explorar juntas. ¡Marca todas las que te llamen la atención!</label>
+
+      <div class="class-grid">
+
+        <div class="class-card" data-group="classes" data-val="Cómo piensan los millonarios">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🧠</span>
+          <div class="class-title">Cómo piensan los millonarios</div>
+          <div class="class-cat">💰 Dinero</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="La crisis que dejó a todos en quiebra">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">📉</span>
+          <div class="class-title">La crisis que dejó a todos en quiebra</div>
+          <div class="class-cat">💰 Dinero</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué hay gente pobre y gente rica">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">⚖️</span>
+          <div class="class-title">Por qué hay gente pobre y gente rica</div>
+          <div class="class-cat">💰 Dinero</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Cómo ahorrar desde joven y que valga la pena">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🐷</span>
+          <div class="class-title">Cómo ahorrar desde joven y que valga la pena</div>
+          <div class="class-cat">💰 Dinero</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Las 5 cosas que no sabías de tu cuerpo">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🫀</span>
+          <div class="class-title">Las 5 cosas que no sabías de tu cuerpo</div>
+          <div class="class-cat">🫁 Cuerpo humano</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Lo que nadie te explica sobre las hormonas">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">⚗️</span>
+          <div class="class-title">Lo que nadie te explica sobre las hormonas</div>
+          <div class="class-cat">🫁 Cuerpo humano</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Tu ejército interno: el sistema inmune">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🛡️</span>
+          <div class="class-title">Tu ejército interno: el sistema inmune</div>
+          <div class="class-cat">🫁 Cuerpo humano</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué tu cerebro te miente (y cómo saberlo)">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🧬</span>
+          <div class="class-title">Por qué tu cerebro te miente (y cómo saberlo)</div>
+          <div class="class-cat">🫁 Cuerpo humano</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué el azúcar es más adictiva de lo que crees">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🍭</span>
+          <div class="class-title">Por qué el azúcar es más adictiva de lo que crees</div>
+          <div class="class-cat">🥗 Nutrición</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Dietas que prometen todo pero no funcionan">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🚩</span>
+          <div class="class-title">Dietas que prometen todo pero no funcionan</div>
+          <div class="class-cat">🥗 Nutrición</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Comer rico y comer bien: sí es posible">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🥑</span>
+          <div class="class-title">Comer rico y comer bien: sí es posible</div>
+          <div class="class-cat">🥗 Nutrición</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué tu barriga y tu estado de ánimo están conectados">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🦠</span>
+          <div class="class-title">Por qué tu barriga y tu ánimo están conectados</div>
+          <div class="class-cat">🥗 Nutrición</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué hacemos cosas que sabemos que están mal">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🤔</span>
+          <div class="class-title">Por qué hacemos cosas que sabemos que están mal</div>
+          <div class="class-cat">🧠 Psicología</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Cómo manipulan las redes sociales tu cerebro">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">📱</span>
+          <div class="class-title">Cómo manipulan las redes sociales tu cerebro</div>
+          <div class="class-cat">🧠 Psicología</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="El experimento más perturbador: obediencia ciega">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">😨</span>
+          <div class="class-title">El experimento más perturbador: obediencia ciega</div>
+          <div class="class-cat">🧠 Psicología</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Por qué necesitamos sentirnos aceptadas (y cómo no depender de eso)">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🫂</span>
+          <div class="class-title">Por qué necesitamos sentirnos aceptadas (y cómo no depender de eso)</div>
+          <div class="class-cat">🧠 Psicología</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="La historia que los libros no te cuentan">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">📜</span>
+          <div class="class-title">La historia que los libros no te cuentan</div>
+          <div class="class-cat">🌍 Historia</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Las mujeres que cambiaron el mundo y nadie conoce">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">👑</span>
+          <div class="class-title">Las mujeres que cambiaron el mundo y nadie conoce</div>
+          <div class="class-cat">🌍 Historia</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Cómo empezaron las guerras más grandes de la historia">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">⚔️</span>
+          <div class="class-title">Cómo empezaron las guerras más grandes de la historia</div>
+          <div class="class-cat">🌍 Historia</div>
+        </div>
+
+        <div class="class-card" data-group="classes" data-val="Civilizaciones antiguas que te van a dejar con la boca abierta">
+          <div class="check-icon">✓</div>
+          <span class="class-emoji">🏛️</span>
+          <div class="class-title">Civilizaciones antiguas que te van a dejar con la boca abierta</div>
+          <div class="class-cat">🌍 Historia</div>
+        </div>
+
+      </div>
+
+      <label style="margin-top:28px;">¿Qué tan segura te sientes de ti misma ahorita?</label>
+      <div class="scale" id="confidenceScale">
+        <button class="scale-btn" data-val="1">1</button>
+        <button class="scale-btn" data-val="2">2</button>
+        <button class="scale-btn" data-val="3">3</button>
+        <button class="scale-btn" data-val="4">4</button>
+        <button class="scale-btn" data-val="5">5</button>
+        <button class="scale-btn" data-val="6">6</button>
+        <button class="scale-btn" data-val="7">7</button>
+        <button class="scale-btn" data-val="8">8</button>
+        <button class="scale-btn" data-val="9">9</button>
+        <button class="scale-btn" data-val="10">10</button>
+      </div>
+      <div class="scale-labels"><span>Para nada</span><span>¡Súper segura!</span></div>
+
+      <label>¿Hay algo que te preocupe o que sientas que los adultos no entienden?</label>
+      <textarea id="stressAdults" placeholder="Esto es entre nosotras 🌸" maxlength="300"></textarea>
+      <div class="char-count" id="stressCount">0 / 300</div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" onclick="submitForm()">¡Listo, enviar! 🌸</button>
+    </div>
+  </div>
+
+  <!-- Éxito -->
+  <div class="success" id="successScreen">
+    <span class="success-emoji">🌸</span>
+    <h2>¡Muchas gracias!</h2>
+    <p>Esto me ayuda muchísimo a conocerte mejor y a acompañarte de la mejor manera. ¡Vamos a aprender cosas increíbles juntas! 💜</p>
+    <div class="summary-card" id="summaryCard">
+      <h3>📋 Tus respuestas</h3>
+      <div id="summaryContent"></div>
+    </div>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:20px;">
+      <button class="pdf-btn" onclick="downloadPDF()">⬇️ Descargar PDF</button>
+      <button class="reset-btn" onclick="resetForm()">Volver a llenar</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  const selections = {};
+  const selColors = ['sel-purple','sel-pink','sel-violet','sel-lilac'];
+  const scaleGroups = {};
+
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const g = chip.dataset.group, v = chip.dataset.val;
+      if (!selections[g]) selections[g] = [];
+      const i = selections[g].indexOf(v);
+      if (i > -1) { selections[g].splice(i,1); chip.className = 'chip'; }
+      else { selections[g].push(v); chip.classList.add(selColors[selections[g].length % selColors.length]); }
+      updateProgress();
+    });
+  });
+
+  document.querySelectorAll('.class-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const g = card.dataset.group, v = card.dataset.val;
+      if (!selections[g]) selections[g] = [];
+      const i = selections[g].indexOf(v);
+      if (i > -1) { selections[g].splice(i,1); card.classList.remove('selected'); }
+      else { selections[g].push(v); card.classList.add('selected'); }
+      updateProgress();
+    });
+  });
+
+  document.querySelectorAll('.scale').forEach(scale => {
+    const id = scale.id; scaleGroups[id] = null;
+    scale.querySelectorAll('.scale-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        scale.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active'); scaleGroups[id] = btn.dataset.val; updateProgress();
+      });
+    });
+  });
+
+  function addCounter(taId, ctId) {
+    const ta = document.getElementById(taId), ct = document.getElementById(ctId);
+    if (!ta||!ct) return;
+    ta.addEventListener('input', () => { ct.textContent = `${ta.value.length} / ${ta.maxLength}`; updateProgress(); });
+  }
+  addCounter('unique','uniqueCount');
+  addCounter('stressAdults','stressCount');
+  document.querySelectorAll('input').forEach(el => el.addEventListener('input', updateProgress));
+
+  function updateProgress() {
+    let filled = 0;
+    if (document.getElementById('name').value.trim()) filled++;
+    if ((selections['subjects']||[]).length) filled++;
+    if ((selections['learnStyle']||[]).length) filled++;
+    if ((selections['classes']||[]).length) filled++;
+    document.getElementById('progressFill').style.width = (filled/4*100) + '%';
+    document.getElementById('progressLabel').textContent = `${filled} / 4 secciones`;
+  }
+
+  function submitForm() {
+    const answers = [
+      { q:'Nombre', a: document.getElementById('name').value||'—' },
+      { q:'Tres palabras', a: document.getElementById('threeWords').value||'—' },
+      { q:'Lo que la hace única', a: document.getElementById('unique').value||'—' },
+      { q:'Materias favoritas', a: (selections['subjects']||[]).join(', ')||'—' },
+      { q:'Le gusta de la escuela', a: document.getElementById('schoolLike').value||'—' },
+      { q:'Cómo prefiere aprender', a: (selections['learnStyle']||[]).join(', ')||'—' },
+      { q:'Tiempo libre', a: (selections['interests']||[]).join(', ')||'—' },
+      { q:'Quiere aprender o intentar', a: document.getElementById('secretLearn').value||'—' },
+      { q:'Clases que le emocionan', a: (selections['classes']||[]).length ? '• ' + (selections['classes']||[]).join('\n• ') : '—' },
+      { q:'Seguridad en sí misma (1-10)', a: scaleGroups['confidenceScale']||'—' },
+      { q:'Lo que los adultos no entienden', a: document.getElementById('stressAdults').value||'—' },
+    ];
+    window._lastAnswers = answers;
+    document.getElementById('summaryContent').innerHTML = answers.map(a =>
+      `<div class="summary-item"><div class="sq">${a.q}</div><div class="sa">${a.a}</div></div>`
+    ).join('');
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+    document.getElementById('summaryCard').classList.add('show');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  function resetForm() {
+    document.getElementById('mainForm').style.display = 'block';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('summaryCard').classList.remove('show');
+    document.querySelectorAll('.chip').forEach(c => c.className = 'chip');
+    document.querySelectorAll('.class-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+    document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+    Object.keys(selections).forEach(k => delete selections[k]);
+    Object.keys(scaleGroups).forEach(k => scaleGroups[k] = null);
+    updateProgress();
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageW = 210, pageH = 297;
+    const margin = 18, colW = pageW - margin * 2;
+    let y = 0;
+
+    const checkPage = (needed = 10) => {
+      if (y + needed > pageH - 16) { doc.addPage(); y = 20; }
+    };
+
+    // ── Header ──────────────────────────────────────────────
+    // Purple gradient background strip
+    doc.setFillColor(147, 51, 234);
+    doc.rect(0, 0, pageW, 42, 'F');
+    doc.setFillColor(232, 121, 249);
+    doc.rect(0, 30, pageW, 12, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(22);
+    doc.text('✨ Respuestas del Formulario', pageW / 2, 17, { align: 'center' });
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const nombre = document.getElementById('name').value || '—';
+    const fecha = new Date().toLocaleDateString('es-MX', { year:'numeric', month:'long', day:'numeric' });
+    doc.text(`${nombre}  ·  ${fecha}`, pageW / 2, 27, { align: 'center' });
+
+    y = 54;
+
+    // Category colors
+    const catColors = {
+      'Sobre ti':            [233, 213, 255],
+      'La escuela':          [221, 214, 254],
+      'Lo que te mueve':     [245, 208, 254],
+      'Clases que te emocionan': [216, 180, 254],
+      'Vida y yo':           [233, 213, 255],
+    };
+
+    const answers = window._lastAnswers || [];
+
+    // Section grouping
+    const sections = [
+      { title: 'Sobre ti', keys: ['Nombre','Tres palabras','Lo que la hace única'] },
+      { title: 'La escuela', keys: ['Materias favoritas','Le gusta de la escuela'] },
+      { title: 'Lo que te mueve', keys: ['Cómo prefiere aprender','Tiempo libre','Quiere aprender o intentar'] },
+      { title: 'Clases que te emocionan', keys: ['Clases que le emocionan'] },
+      { title: 'Vida y yo', keys: ['Seguridad en sí misma (1-10)','Lo que los adultos no entienden'] },
+    ];
+
+    const answerMap = {};
+    answers.forEach(a => answerMap[a.q] = a.a);
+
+    sections.forEach(sec => {
+      checkPage(18);
+
+      // Section header pill
+      const [r,g,b] = catColors[sec.title] || [233,213,255];
+      doc.setFillColor(r, g, b);
+      doc.roundedRect(margin, y, colW, 9, 3, 3, 'F');
+      doc.setTextColor(74, 29, 150);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text(sec.title.toUpperCase(), margin + 4, y + 6.2);
+      y += 13;
+
+      sec.keys.forEach(key => {
+        const val = answerMap[key] || '—';
+        checkPage(14);
+
+        // Question label
+        doc.setTextColor(155, 127, 192);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(8);
+        doc.text(key.toUpperCase(), margin, y);
+        y += 5;
+
+        // Answer text — wrap long text
+        doc.setTextColor(59, 42, 90);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const lines = doc.splitTextToSize(val, colW);
+        lines.forEach(line => {
+          checkPage(7);
+          doc.text(line, margin, y);
+          y += 6;
+        });
+
+        // Thin divider
+        doc.setDrawColor(232, 223, 248);
+        doc.setLineWidth(0.3);
+        doc.line(margin, y + 1, pageW - margin, y + 1);
+        y += 6;
+      });
+
+      y += 4;
+    });
+
+    // Footer on each page
+    const totalPages = doc.internal.getNumberOfPages();
+    for (let p = 1; p <= totalPages; p++) {
+      doc.setPage(p);
+      doc.setFillColor(245, 240, 255);
+      doc.rect(0, pageH - 12, pageW, 12, 'F');
+      doc.setTextColor(155, 127, 192);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text('Formulario de Mentoría 💜', margin, pageH - 5);
+      doc.text(`Página ${p} de ${totalPages}`, pageW - margin, pageH - 5, { align: 'right' });
+    }
+
+    const safeName = nombre.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g,'').trim().replace(/\s+/g,'_') || 'respuestas';
+    doc.save(`mentoria_${safeName}.pdf`);
+  }
+</script>
+</body>
+</html>
